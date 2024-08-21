@@ -79,7 +79,7 @@ This Python script simulates multiple views on product pages on Digikala using S
    Example input:
 
    ```
-   Enter product IDs separated by commas: 12345,67890
+   Enter product IDs separated by commas: dkp-12345, dkp-67890
    Enter the number of views: 10
    ```
 
