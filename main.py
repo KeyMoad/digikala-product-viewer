@@ -14,7 +14,7 @@ basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = getLogger(__name__)
 
 # Define the product URL
-BASE_PRODUCT_URL = 'https://www.digikala.com/product/'
+BASE_PRODUCT_URL = 'https://www.digikala.com/product'
 DEFAULT_TIMEOUT = 10
 
 
@@ -60,7 +60,7 @@ def viewer(driver, wait, url: str, view_number: int):
         sleep(uniform(2, 5))
 
         for _ in range(randint(4, 7)):
-            scroll_amount = randint(200, 1000)
+            scroll_amount = randint(200, 1100)
             driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
             sleep(uniform(0.5, 1.5))
 
@@ -104,7 +104,8 @@ def main(view_number: int, list_of_id: list):
         list_of_id (list): List of product IDs.
     """
     for product_id in list_of_id:
-        url = PRODUCT_URL(product_id)
+        url = PRODUCT_URL(product_id.strip())
+        logger.info(f'Checking product {product_id.strip()} [{url}] ...')
         viewer(driver, wait, url, view_number)
 
 
@@ -118,9 +119,10 @@ if __name__ == '__main__':
 
     # Setup Chrome options
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
 
     # Initialize the WebDriver
     driver = webdriver.Chrome(options=chrome_options)
