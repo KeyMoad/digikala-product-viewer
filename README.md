@@ -1,7 +1,3 @@
-Here's a detailed README for your GitHub repository that covers the purpose, usage, and technical details of your script:
-
----
-
 # Digikala Product Viewer Script
 
 This Python script simulates multiple views on product pages on Digikala using Selenium WebDriver. It automates interactions with the product pages to mimic user behavior, such as scrolling and clicking on various tabs.
