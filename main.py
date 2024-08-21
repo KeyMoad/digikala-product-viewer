@@ -14,7 +14,7 @@ basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = getLogger(__name__)
 
 # Define the product URL
-BASE_PRODUCT_URL = 'https://www.digikala.com/product/'  # Replace with the test product URL
+BASE_PRODUCT_URL = 'https://www.digikala.com/product/'
 DEFAULT_TIMEOUT = 10
 
 
@@ -94,8 +94,6 @@ def viewer(driver, wait, url: str, view_number: int):
 
         logger.info(f"View {i+1} completed")
 
-    driver.quit()  # Close the browser when done
-
 
 def main(view_number: int, list_of_id: list):
     """
@@ -120,7 +118,7 @@ if __name__ == '__main__':
 
     # Setup Chrome options
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
