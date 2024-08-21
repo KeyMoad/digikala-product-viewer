@@ -100,10 +100,10 @@ Below is a sample output of the script:
 
 ```
 2024-08-21 12:00:00 - INFO - Checking product dkp-12345 [https://www.digikala.com/product/dkp-12345] ...
-2024-08-21 12:00:05 - INFO - Clicked on Review tab
-2024-08-21 12:00:15 - INFO - Clicked on Specs tab
-2024-08-21 12:00:20 - INFO - Clicked on Comments tab
-2024-08-21 12:00:25 - INFO - Clicked on See All Comments
+2024-08-21 12:00:05 - INFO - Clicked on First button
+2024-08-21 12:00:15 - INFO - Clicked on Second button
+2024-08-21 12:00:20 - INFO - Clicked on Third button
+2024-08-21 12:00:25 - INFO - Clicked on Last button
 2024-08-21 12:00:30 - INFO - View 1 completed
 ...
 ```
@@ -112,10 +112,6 @@ Below is a sample output of the script:
 
 - **Selectors**: CSS selectors used in the script may need to be updated if Digikala changes its page layout or element identifiers.
 - **Headless Mode**: The script runs in headless mode for efficiency. If you need to see the browser interaction, remove the `--headless` option from the Chrome options.
-
-## Contributing
-
-Feel free to contribute by opening issues or submitting pull requests. Please ensure to follow the contribution guidelines and maintain code quality.
 
 ## License
 
