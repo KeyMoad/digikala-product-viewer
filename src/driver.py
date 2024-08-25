@@ -4,8 +4,9 @@ from src.utils import logger
 
 
 class DriverManager:
-    def __init__(self, proxy_manager):
+    def __init__(self, proxy_manager, proxy_type):
         self.proxy_manager = proxy_manager
+        self.proxy_type = proxy_type
 
     def get_driver(self):
         """
@@ -15,7 +16,6 @@ class DriverManager:
             webdriver.Chrome: The configured WebDriver instance.
         """
         proxy = self.proxy_manager.get_random_proxy()
-        proxy_type = "http"  # Adjust proxy type if necessary
 
         us = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
         chrome_options = Options()
@@ -27,7 +27,7 @@ class DriverManager:
 
         # Add the proxy to Chrome options
         if proxy:
-            chrome_options.add_argument(f'--proxy-server={proxy_type}://{proxy}')
+            chrome_options.add_argument(f'--proxy-server={self.proxy_type}://{proxy}')
             logger.info(f'Using proxy: {proxy}')
         else:
             logger.warning('No proxy is being used')

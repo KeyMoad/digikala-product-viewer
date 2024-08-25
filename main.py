@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from sys import exit
 import chromedriver_autoinstaller
 
-from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, PROXY_LIST_URLS, ID_LIST_FILE
+from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, PROXY_LIST_URLS, ID_LIST_FILE, PROXY_TYPE
 from src.utils import logger, read_product_ids
 from src.viewer import ProductViewer
 from src.driver import DriverManager
@@ -19,7 +19,7 @@ def main(view_number: int, product_ids: list):
         product_ids (list): List of product IDs.
     """
     proxy_manager = ProxyManager(PROXY_LIST_URLS)
-    driver_manager = DriverManager(proxy_manager)
+    driver_manager = DriverManager(proxy_manager, PROXY_TYPE)
 
     for product_id in product_ids:
         url = f'{BASE_PRODUCT_URL}/{product_id.strip()}'
