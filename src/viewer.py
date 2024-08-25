@@ -27,8 +27,8 @@ class ProductViewer:
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
                 self.driver.execute_script("arguments[0].click();", element)
                 return True
-            except Exception as e:
-                logger.warning(f"Scroll attempt {scroll + 1} failed: {e}")
+            except Exception:
+                logger.warning(f"Scroll attempt {scroll + 1} failed")
                 self.driver.execute_script("window.scrollBy(0, 400);")
                 sleep(1)
         return False
