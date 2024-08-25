@@ -1,5 +1,6 @@
 from random import shuffle
 from requests import get, RequestException
+from src.utils import logger
 
 
 class ProxyManager:
@@ -35,7 +36,7 @@ class ProxyManager:
 
                 proxies.update(filter(None, map(str.strip, proxy_list)))
             except RequestException as e:
-                print(f"Error fetching proxies from {url}: {e}")
+                logger.error(f"Error fetching proxies from {url}: {e}")
 
         proxies_list = list(proxies)
         shuffle(proxies_list)
@@ -49,7 +50,7 @@ class ProxyManager:
             str: A proxy in the format 'ip:port'.
         """
         if not self.proxies:
-            print("No proxies available. Please fetch new proxies.")
+            logger.warn("No proxies available. Please fetch new proxies.")
             return None
 
         proxy = self.proxies.pop()
