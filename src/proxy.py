@@ -36,6 +36,14 @@ class ProxyManager:
                 else:
                     proxy_list = output.split('\n')
 
+                # Ensure proxies are in a valid format (ip:port)
+                for proxy in proxy_list:
+                    if self.__is_valid_proxy_format(proxy.strip()):
+                        proxies.add(proxy.strip())
+                    else:
+                        logger.debug(f"Invalid proxy format detected: {proxy.strip()}")
+
+
                 proxies.update(filter(None, map(str.strip, proxy_list)))
             except RequestException as e:
                 logger.error(f"Error fetching proxies from {url}: {e}")
@@ -43,6 +51,23 @@ class ProxyManager:
         proxies_list = list(proxies)
         shuffle(proxies_list)
         return proxies_list
+
+    def __is_valid_proxy_format(self, proxy: str) -> bool:
+        """
+        Checks if a proxy string is in the valid format of 'ip:port'.
+
+        Args:
+            proxy (str): The proxy string to validate.
+
+        Returns:
+            bool: True if the proxy format is valid, False otherwise.
+        """
+        parts = proxy.split(':')
+        if len(parts) == 2:
+            ip, port = parts
+            if ip.count('.') == 3 and port.isdigit():
+                return True
+        return False
 
     def __test_proxy(self, proxy: str) -> bool:
         """
