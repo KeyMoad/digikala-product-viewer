@@ -6,13 +6,18 @@ BASE_PRODUCT_URL = 'https://www.digikala.com/product'
 DEFAULT_TIMEOUT = 10
 
 # Proxy list
-PROXY_LIST_URLS = [
-    'https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt',
+HTTP_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt',
+    'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/generated/http_proxies.txt'
+    
+]
+SOCKS4_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks4.txt',
+    'https://github.com/sunny9577/proxy-scraper/blob/master/generated/socks4_proxies.txt'
+]
+SOCKS5_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks5.txt',
-    'https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/proxy.txt',
-    'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/proxies.txt'
+    'https://github.com/sunny9577/proxy-scraper/blob/master/generated/socks5_proxies.txt'
 ]
 
 # ID List file path
