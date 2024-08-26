@@ -17,6 +17,3 @@ PROXY_LIST_URLS = [
 
 # ID List file path
 ID_LIST_FILE = path.join(path.dirname(path.realpath(__file__)), 'id_list.txt')
-
-# proxy type
-PROXY_TYPE = 'socks4'

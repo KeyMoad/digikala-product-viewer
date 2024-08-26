@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
 import chromedriver_autoinstaller
 
-from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, PROXY_LIST_URLS, ID_LIST_FILE, PROXY_TYPE
+from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, PROXY_LIST_URLS, ID_LIST_FILE
 from src.utils import logger
 from src.viewer import ProductViewer
 from src.driver import DriverManager
@@ -18,13 +18,13 @@ def view_single_instance(product_id: str, proxy_manager: ProxyManager):
         proxy_manager (ProxyManager): Instance of ProxyManager to get proxies.
     """
     url = f'{BASE_PRODUCT_URL}/{product_id.strip()}'
-    driver_manager = DriverManager(proxy_manager, PROXY_TYPE)
+    driver_manager = DriverManager(proxy_manager)
     driver = driver_manager.get_driver()
     wait = WebDriverWait(driver, DEFAULT_TIMEOUT)
+
     viewer = ProductViewer(driver, wait)
-    
     viewer.simulate_views(url, 1)
-    
+
     driver.quit()
 
 
@@ -63,7 +63,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
 
-def main(view_number: int, product_ids: list, batch_size: int):
+def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str):
     """
     Main function to initiate viewing process for each product in batches.
 
@@ -72,7 +72,7 @@ def main(view_number: int, product_ids: list, batch_size: int):
         product_ids (list): List of product IDs.
         batch_size (int): Number of concurrent views to run in each batch.
     """
-    proxy_manager = ProxyManager(PROXY_LIST_URLS)
+    proxy_manager = ProxyManager(PROXY_LIST_URLS, proxy_type)
 
     for product_id in product_ids:
         view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
@@ -83,8 +83,9 @@ if __name__ == '__main__':
 
     # Argument parser for command line arguments
     parser = argparse.ArgumentParser(description='Simulate product views.')
-    parser.add_argument('view_number', type=int, help='Number of views to simulate per product')
-    parser.add_argument('--batch-size', type=int, default=10, help='Number of concurrent views to run in each batch')
+    parser.add_argument('--view-number', type=int, default=50, help='Number of views to simulate per product. Default [50]')
+    parser.add_argument('--batch-size', type=int, default=10, help='Number of concurrent views to run in each batch. Default [10]')
+    parser.add_argument('--proxy-type', type=str, default='http', choices=['http', 'socks4', 'socks5'], help='The proxy type of connections. Default [http]')
     args = parser.parse_args()
 
     # Automatically install the correct version of chromedriver
@@ -95,6 +96,6 @@ if __name__ == '__main__':
         product_ids = [line.strip() for line in f if line.strip()]
 
     try:
-        main(args.view_number, product_ids, args.batch_size)
+        main(args.view_number, product_ids, args.batch_size, args.proxy_type)
     except Exception as e:
         logger.error(f"An error occurred: {e}")

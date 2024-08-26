@@ -4,7 +4,7 @@ from src.utils import logger
 
 
 class ProxyManager:
-    def __init__(self, proxy_urls: list):
+    def __init__(self, proxy_urls: list, proxy_type: str):
         """
         Initialize the ProxyManager class by fetching and shuffling proxies.
 
@@ -13,6 +13,7 @@ class ProxyManager:
         """
         self.proxy_urls = proxy_urls
         self.proxies = self.fetch_proxies()
+        self.proxy_type = proxy_type
 
     def fetch_proxies(self) -> list:
         """
