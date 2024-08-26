@@ -96,4 +96,4 @@ class ProductViewer:
             self.driver.execute_script("window.scrollTo(0, 0);")
             sleep(uniform(1, 3))  # Random delay after scrolling back
 
-            logger.info(f"View {i + 1} completed")
+            logger.info(f"View completed")
