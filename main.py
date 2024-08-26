@@ -2,8 +2,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
 import chromedriver_autoinstaller
 
-from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, PROXY_LIST_URLS, ID_LIST_FILE
-from src.utils import logger
+from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS
+from src.utils import logger, read_product_ids
 from src.viewer import ProductViewer
 from src.driver import DriverManager
 from src.proxy import ProxyManager
@@ -72,7 +72,14 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str):
         product_ids (list): List of product IDs.
         batch_size (int): Number of concurrent views to run in each batch.
     """
-    proxy_manager = ProxyManager(PROXY_LIST_URLS, proxy_type)
+    if proxy_type == 'http':
+        proxy_manager = ProxyManager(HTTP_PROXY_LIST_URLS, proxy_type)
+    elif proxy_type == 'socks4':
+        proxy_manager = ProxyManager(SOCKS4_PROXY_LIST_URLS, proxy_type)
+    elif proxy_type == 'socks5':
+        proxy_manager = ProxyManager(SOCKS5_PROXY_LIST_URLS, proxy_type)
+    else:
+        raise ValueError(f"Unsupported proxy type: {proxy_type}")
 
     for product_id in product_ids:
         view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
@@ -92,8 +99,7 @@ if __name__ == '__main__':
     chromedriver_autoinstaller.install()
 
     # Read product IDs from file
-    with open(ID_LIST_FILE, 'r') as f:
-        product_ids = [line.strip() for line in f if line.strip()]
+    product_ids = read_product_ids(ID_LIST_FILE)
 
     try:
         main(args.view_number, product_ids, args.batch_size, args.proxy_type)
