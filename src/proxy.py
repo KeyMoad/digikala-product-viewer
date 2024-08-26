@@ -60,13 +60,13 @@ class ProxyManager:
 
             # Consider proxy valid if status code is 200
             if response.status_code == 200:
-                logger.info(f"Proxy {proxy} is valid.")
+                logger.debug(f"Proxy {proxy} is valid.")
                 return True
             else:
-                logger.warn(f"Proxy {proxy} returned status code {response.status_code}.")
+                logger.debug(f"Proxy {proxy} returned status code {response.status_code}.")
                 return False
         except RequestException as e:
-            logger.warn(f"Proxy {proxy} failed with error: {e}")
+            logger.debug(f"Proxy {proxy} failed with error: {e}")
             return False
 
     def get_random_proxy(self) -> str:
