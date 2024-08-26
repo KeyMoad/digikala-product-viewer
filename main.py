@@ -73,11 +73,11 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str):
         batch_size (int): Number of concurrent views to run in each batch.
     """
     if proxy_type == 'http':
-        proxy_manager = ProxyManager(HTTP_PROXY_LIST_URLS, proxy_type)
+        proxy_manager = ProxyManager(HTTP_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL)
     elif proxy_type == 'socks4':
-        proxy_manager = ProxyManager(SOCKS4_PROXY_LIST_URLS, proxy_type)
+        proxy_manager = ProxyManager(SOCKS4_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL)
     elif proxy_type == 'socks5':
-        proxy_manager = ProxyManager(SOCKS5_PROXY_LIST_URLS, proxy_type)
+        proxy_manager = ProxyManager(SOCKS5_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL)
     else:
         raise ValueError(f"Unsupported proxy type: {proxy_type}")
 

@@ -10,7 +10,7 @@ class ProductViewer:
         self.driver = driver
         self.wait = wait
 
-    def scroll_and_click(self, selector, max_scrolls=5) -> bool:
+    def __scroll_and_click(self, selector, max_scrolls=5) -> bool:
         """
         Scrolls the page and clicks on an element identified by the selector.
 
@@ -57,7 +57,7 @@ class ProductViewer:
                     "text-body2-strong.flex.min-w-fit.max-w-\\[300px\\].lg\\:max-w-\\[400px\\]."
                     "overflow-hidden[data-cro-id='pdp-scroll-menu']"
                 )
-                if self.scroll_and_click(review_tab_selector):
+                if self.__scroll_and_click(review_tab_selector):
                     logger.info("Clicked on review tab")
                 sleep(uniform(2, 6))
 
@@ -67,7 +67,7 @@ class ProductViewer:
                     "text-body2-strong.flex.min-w-fit.max-w-\\[300px\\].lg\\:max-w-\\[400px\\]."
                     "overflow-hidden[data-cro-id='pdp-scroll-menu']"
                 )
-                if self.scroll_and_click(specs_tab_selector):
+                if self.__scroll_and_click(specs_tab_selector):
                     logger.info("Clicked on specs tab")
                 sleep(uniform(1, 3))
 
@@ -77,7 +77,7 @@ class ProductViewer:
                     "text-body2-strong.flex.min-w-fit.max-w-\\[300px\\].lg\\:max-w-\\[400px\\]."
                     "overflow-hidden[data-cro-id='pdp-scroll-menu']"
                 )
-                if self.scroll_and_click(comments_tab_selector):
+                if self.__scroll_and_click(comments_tab_selector):
                     logger.info("Clicked on comments tab")
                 sleep(uniform(2, 5))
 
@@ -85,7 +85,7 @@ class ProductViewer:
                     "span.inline-flex.items-center.cursor-pointer."
                     "styles_Anchor--secondary__3KsgY.text-button-2.my-auto"
                 )
-                if self.scroll_and_click(see_all_comments_selector):
+                if self.__scroll_and_click(see_all_comments_selector):
                     logger.info("Clicked on see all comments")
                 sleep(uniform(4, 7))
 
