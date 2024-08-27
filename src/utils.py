@@ -6,20 +6,20 @@ basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = getLogger(__name__)
 
 
-def read_product_ids(file_path: str) -> list:
+def read_file(file_path: str) -> list:
     """
-    Reads product IDs from a file, each ID on a new line.
+    Reads file, each content on a new line.
 
     Args:
-        file_path (str): Path to the file containing product IDs.
+        file_path (str): Path to the file containing contents.
 
     Returns:
-        list: A list of product IDs.
+        list: A list of contents.
     """
     try:
         with open(file_path, 'r') as file:
-            product_ids = [line.strip() for line in file if line.strip()]
-        return product_ids
+            content = [line.strip() for line in file if line.strip()]
+        return content
     except Exception as e:
         logger.error(f"Error reading product IDs from file: {e}")
         return []
