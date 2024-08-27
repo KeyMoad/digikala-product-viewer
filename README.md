@@ -1,118 +1,91 @@
 # Digikala Product Viewer Script
 
-This Python script simulates multiple views on product pages on Digikala using Selenium WebDriver. It automates interactions with the product pages to mimic user behavior, such as scrolling and clicking on various tabs.
+## **Overview**
 
-## Features
+This script automates the simulation of product page views using proxies to mimic real user behavior. It's designed for situations where you want to generate traffic to specific product pages without being blocked by rate limits or IP restrictions. It leverages Selenium WebDriver for browser automation, allowing for randomized browsing patterns, including scrolling and clicking on various product tabs.
+
+## **Features**
 
 - **Automated Viewing**: Simulate multiple views on a Digikala product page.
-- **Dynamic Interaction**: Automatically scrolls through the page and interacts with various elements like review tabs, specifications, and comments.
+- **Proxy Support**: Supports HTTP, SOCKS4, and SOCKS5 proxies. You can either fetch proxies from predefined URLs or provide your own list.
+- **Concurrency**: Simulates multiple concurrent views using `ThreadPoolExecutor`.
+- **Randomized User Interaction**: Implements random delays, scrolling, and clicks to mimic human behavior.
+- **Proxy Validation**: Optionally validates proxies before use to ensure they are working.
 - **Headless Operation**: Runs Chrome in headless mode for efficiency.
 
-## Requirements
+## **File Structure**
 
-- Python 3.6+
+- **`main.py`**: The main script where the viewing process is initiated.
+- **`settings.py`**: Contains configurations such as base URLs, file paths, and default timeout settings.
+- **`src/utils.py`**: Utility functions for logging and reading files.
+- **`src/viewer.py`**: Contains the logic for simulating user interactions on the product page.
+- **`src/driver.py`**: Manages WebDriver instances and integrates proxies.
+- **`src/proxy.py`**: Manages proxy fetching, testing, and allocation.
+
+## **Requirements**
+
+- Python 3.8+
 - Selenium
-- ChromeDriver (automatically managed by `chromedriver_autoinstaller`)
+- `chromedriver_autoinstaller` (automatically installs the correct version of ChromeDriver)
+- `requests` for fetching proxies
 
-## Installation
+## **Installation**
 
-1. **Clone the Repository**
-
+1. **Clone the repository**:
    ```bash
-   git https://github.com/KeyMoad/digikala-product-viewer.git
+   git clone https://github.com/KeyMoad/digikala-product-viewer.git
    cd digikala-product-viewer
    ```
 
-2. **Install Dependencies**
-
-   Make sure you have Python and pip installed, then run:
-
+2. **Install the required Python packages**:
    ```bash
    pip install -r requirements.txt
    ```
 
-   The `requirements.txt` should contain:
+3. **Chromedriver Setup**:
+   The script uses `chromedriver_autoinstaller` to automatically install the appropriate version of ChromeDriver, so no additional setup is required.
 
-   ```
-    attrs
-    beautifulsoup4
-    certifi
-    charset-normalizer
-    chromedriver-autoinstaller
-    h11
-    idna
-    outcome
-    packaging
-    PySocks
-    requests
-    selenium
-    sniffio
-    sortedcontainers
-    soupsieve
-    trio
-    trio-websocket
-    typing_extensions
-    urllib3
-    websocket-client
-    wsproto
-   ```
+## **Usage**
 
-## Usage
+You can run the script from the command line with various arguments to control its behavior.
 
-1. **Prepare the Script**
+### **Basic Command**
 
-   Make sure you have the `chromedriver_autoinstaller` package installed. This will automatically manage the correct version of ChromeDriver for your system.
-
-2. **Run the Script**
-
-   Execute the script from the command line:
-
-   ```bash
-   python main.py
-   ```
-
-   You will be prompted to enter the following:
-
-   - **Product IDs**: Enter the product IDs separated by commas.
-   - **Number of Views**: Enter the number of views to simulate for each product.
-
-   Example input:
-
-   ```
-   Enter product IDs separated by commas: dkp-12345, dkp-67890
-   Enter the number of views: 10
-   ```
-
-## How It Works
-
-1. **Initialization**: The script initializes a Chrome WebDriver instance with headless mode enabled.
-
-2. **Product Viewing**: For each product ID provided:
-   - The script navigates to the product page.
-   - Simulates user interactions such as scrolling and clicking on review tabs, specifications, and comments.
-   - Randomizes delays between actions to mimic human behavior.
-
-3. **Error Handling**: Logs warnings and errors if elements cannot be interacted with or if other issues occur during execution.
-
-## Example
-
-Below is a sample output of the script:
-
-```
-2024-08-21 12:00:00 - INFO - Checking product dkp-12345 [https://www.digikala.com/product/dkp-12345] ...
-2024-08-21 12:00:05 - INFO - Clicked on First button
-2024-08-21 12:00:15 - INFO - Clicked on Second button
-2024-08-21 12:00:20 - INFO - Clicked on Third button
-2024-08-21 12:00:25 - INFO - Clicked on Last button
-2024-08-21 12:00:30 - INFO - View 1 completed
-...
+```bash
+python main.py --view-number 50 --batch-size 10 --proxy-type http
 ```
 
-## Notes
+### **Arguments**
 
-- **Selectors**: CSS selectors used in the script may need to be updated if Digikala changes its page layout or element identifiers.
-- **Headless Mode**: The script runs in headless mode for efficiency. If you need to see the browser interaction, remove the `--headless` option from the Chrome options.
+- **`--view-number`**: The number of views to simulate per product. Default is 50.
+- **`--batch-size`**: The number of concurrent views to run in each batch. Default is 10.
+- **`--proxy-type`**: Type of proxy to use (options: `http`, `socks4`, `socks5`). Default is `http`.
+- **`--proxy-test-type`**: Optional. Type of proxy validation test (`driver` or `request`). If not provided, no validation is performed.
+- **`--proxy-file`**: Optional. Path to a file containing custom proxy addresses. If not provided, proxies will be fetched online.
 
-## License
+### **Example Command**
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```bash
+python main.py --view-number 100 --batch-size 20 --proxy-type socks5 --proxy-test-type request --proxy-file proxies.txt
+```
+
+This command simulates 100 views per product, with 20 concurrent views at a time using SOCKS5 proxies. The proxies will be validated using the `request` method and loaded from the `proxies.txt` file.
+
+## **Customizing Behavior**
+
+- **Timeout Settings**: Modify `DEFAULT_TIMEOUT` in `settings.py` to change how long the script waits for elements.
+- **Product URL**: The `BASE_PRODUCT_URL` in `settings.py` defines the root URL for the products you want to view.
+- **Product IDs**: Ensure your product IDs are listed in a text file, with each ID on a new line. The file path is set in `ID_LIST_FILE` in `settings.py`.
+
+## **Logging**
+
+All activities are logged, including proxy validation results and any errors encountered during the viewing process. Logs can be found in the console output.
+
+## **Caution**
+
+- **Ethical Use**: Ensure that the use of this tool complies with the website's terms of service and legal regulations.
+- **Proxy Quality**: Free proxies can be unreliable. Consider using high-quality proxies for consistent performance.
+
+## **License**
+
+This project is licensed under the MIT License. See the LICENSE file for details.
