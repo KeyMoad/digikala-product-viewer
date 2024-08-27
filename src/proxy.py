@@ -5,11 +5,11 @@ from selenium.webdriver.chrome.options import Options
 from random import shuffle
 from requests import get, RequestException
 
-from src.utils import logger
+from src.utils import logger, read_file
 
 
 class ProxyManager:
-    def __init__(self, proxy_urls: list, proxy_type: str, test_url: str, test_type: str, do_test: bool):
+    def __init__(self, proxy_urls: list, proxy_type: str, test_url: str, test_type: str, proxy_file: str):
         """
         Initialize the ProxyManager class by fetching and shuffling proxies.
 
@@ -19,20 +19,26 @@ class ProxyManager:
         self.proxy_urls = proxy_urls
         self.proxy_type = proxy_type
         self.test_url = test_url
-        if do_test:
+        if test_type:
             logger.info('Base on the fact that proxies are free, it may take time to test and use the valid one')
             logger.info('Start finding valid proxies...')
             self.__test_proxy = self.__test_proxy_driver if test_type == 'driver' else self.__test_proxy_request
-        self.proxies = self.__fetch_valid_proxies(do_test)
+        self.proxies = self.__fetch_valid_proxies(test_type, proxy_file)
         self.lock = Lock()
 
-    def __fetch_valid_proxies(self, do_test: bool) -> list:
+    def __fetch_valid_proxies(self, do_test: str, proxy_file: str) -> list:
         """
-        Fetches proxy lists from the provided URLs, deduplicates, shuffles, and returns them.
+        Fetches proxy lists from the provided URLs or proxy file, deduplicates, shuffles, and returns them.
 
         Returns:
             list: A shuffled list of unique proxies.
         """
+        proxies = read_file(proxy_file) if proxy_file else self.__online_fetch()
+        proxies_list = self.__get_valid_proxies(list(proxies)) if do_test else list(proxies)
+
+        return proxies_list
+
+    def __online_fetch(self):
         proxies = set()
 
         for url in self.proxy_urls:
@@ -57,9 +63,7 @@ class ProxyManager:
             except RequestException as e:
                 logger.error(f"Error fetching proxies from {url}: {e}")
 
-        proxies_list = self.__get_valid_proxies(list(proxies)) if do_test else list(proxies)
-
-        return proxies_list
+        return proxies
 
     def __get_valid_proxies(self, proxy_list: list) -> list:
         """
