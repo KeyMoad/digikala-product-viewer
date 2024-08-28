@@ -48,7 +48,7 @@ class ProductViewer:
             for _ in range(randint(4, 7)):
                 scroll_amount = randint(200, 1100)
                 self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
-                sleep(uniform(0.5, 1.5))
+                sleep(uniform(0.5, 2.5))
 
             try:
                 review_tab_selector = (
@@ -69,7 +69,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(specs_tab_selector):
                     logger.info("Clicked on specs tab")
-                sleep(uniform(1, 3))
+                sleep(uniform(2, 4))
 
                 comments_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
@@ -94,6 +94,6 @@ class ProductViewer:
 
             # Scroll back up
             self.driver.execute_script("window.scrollTo(0, 0);")
-            sleep(uniform(1, 3))  # Random delay after scrolling back
+            sleep(uniform(1, 4))  # Random delay after scrolling back
 
             logger.info(f"View completed")
