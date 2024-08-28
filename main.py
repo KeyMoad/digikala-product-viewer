@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
+from sys import exit
 import chromedriver_autoinstaller
 
 from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS
@@ -102,6 +103,9 @@ if __name__ == '__main__':
 
     # Read product IDs from file
     product_ids = read_file(ID_LIST_FILE)
+    if not product_ids:
+        logger.error(f'Please add your Product IDs in {ID_LIST_FILE} file.')
+        exit(1)
 
     try:
         main(args.view_number, product_ids, args.batch_size, args.proxy_type, args.proxy_test_type, args.proxy_file)
