@@ -43,12 +43,12 @@ class ProductViewer:
         """
         for _ in range(view_number):
             self.driver.get(url)
-            sleep(uniform(2, 6))
+            sleep(uniform(5, 12))
 
             for _ in range(randint(4, 7)):
                 scroll_amount = randint(200, 1100)
                 self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
-                sleep(uniform(0.5, 2.5))
+                sleep(uniform(0.5, 3.5))
 
             try:
                 review_tab_selector = (
