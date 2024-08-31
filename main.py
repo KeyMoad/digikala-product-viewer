@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
 from sys import exit
+from random import uniform
 import chromedriver_autoinstaller
 
 from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS
@@ -60,6 +61,10 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
                     future.result()  # This will raise an exception if the callable raised one
                 except Exception as e:
                     logger.error(f"An error occurred while processing a view: {e}")
+
+        time_to_wait = uniform(45, 65)
+        logger.info(f'batch {batch + 1} completed. Waiting {time_to_wait}.')
+        sleep(time_to_wait)
 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
