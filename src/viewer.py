@@ -41,9 +41,9 @@ class ProductViewer:
             url (str): The URL of the product page.
             view_number (int): Number of views to simulate.
         """
-        for i in range(view_number):
+        for _ in range(view_number):
             self.driver.get(url)
-            sleep(uniform(2, 5))
+            sleep(uniform(2, 6))
 
             for _ in range(randint(4, 7)):
                 scroll_amount = randint(200, 1100)
@@ -59,7 +59,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(review_tab_selector):
                     logger.info("Clicked on review tab")
-                sleep(uniform(2, 6))
+                sleep(uniform(2, 8))
 
                 specs_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
@@ -69,7 +69,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(specs_tab_selector):
                     logger.info("Clicked on specs tab")
-                sleep(uniform(2, 4))
+                sleep(uniform(2, 6))
 
                 comments_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
@@ -79,7 +79,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(comments_tab_selector):
                     logger.info("Clicked on comments tab")
-                sleep(uniform(2, 5))
+                sleep(uniform(2, 7))
 
                 see_all_comments_selector = (
                     "span.inline-flex.items-center.cursor-pointer."
