@@ -12,7 +12,7 @@ from settings import VALID_PROXIES_PATH
 
 
 class ProxyManager:
-    def __init__(self, proxy_urls: list, proxy_type: str, test_url: str, test_type: str, proxy_file: str):
+    def __init__(self, proxy_urls: list, proxy_type: str, test_url: str, test_type: str, proxy_file: str, premium: bool, username: str = None, password: str = None):
         """
         Initialize the ProxyManager class by fetching and shuffling proxies.
 
@@ -23,6 +23,9 @@ class ProxyManager:
 
         self.proxy_urls = proxy_urls
         self.proxy_type = proxy_type
+        self.is_proxy_premium = premium
+        self.username = username
+        self.password = password
         self.test_url = test_url
         if test_type:
             logger.info('Base on the fact that proxies are free, it may take time to test and use the valid one')
@@ -154,6 +157,7 @@ class ProxyManager:
     def __test_proxy_driver(self, proxy: str) -> bool:
         """
         Tests a proxy by launching a WebDriver session and attempting to load a webpage.
+        Supports premium proxy authentication.
 
         Args:
             proxy (str): The proxy to test, in the format 'ip:port'.
@@ -163,13 +167,17 @@ class ProxyManager:
         """
         chrome_options = Options()
         chrome_options.add_argument('--headless')
-        chrome_options.add_argument(f'--proxy-server={self.proxy_type}://{proxy}')
         chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument('--disable-dev-shm-usage')
+        if self.is_proxy_premium and self.username and self.password:
+            auth_string = f'{self.username}:{self.password}@{proxy}'
+            chrome_options.add_argument(f'--proxy-server={self.proxy_type}://{auth_string}')
+        else:
+            chrome_options.add_argument(f'--proxy-server={self.proxy_type}://{proxy}')
 
         driver = None
         try:
-            logger.debug(f"Proxy {proxy} is valid.")
             driver = webdriver.Chrome(options=chrome_options)
             driver.set_page_load_timeout(6)
             driver.get(self.test_url)
@@ -194,10 +202,16 @@ class ProxyManager:
             bool: True if the proxy is valid, False otherwise.
         """
         try:
-            proxies = {self.proxy_type: f"{self.proxy_type}://{proxy}"}
-            response = get(self.test_url, proxies=proxies, timeout=5)
+            proxies = {
+                'http': f'{self.proxy_type}://{proxy}',
+                'https': f'{self.proxy_type}://{proxy}'
+            }
+            if self.is_proxy_premium and self.username and self.password:
+                auth = (self.username, self.password)
+                response = get(self.test_url, proxies=proxies, timeout=5, auth=auth)
+            else:
+                response = get(self.test_url, proxies=proxies, timeout=5)
 
-            # Consider proxy valid if status code is 200
             if response.status_code == 200:
                 logger.debug(f"Proxy {proxy} is valid.")
                 return True
