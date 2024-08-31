@@ -4,8 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from random import shuffle
 from requests import get, RequestException
+from datetime import datetime
+from os import path, makedirs
 
 from src.utils import logger, read_file
+from settings import VALID_PROXIES_PATH
 
 
 class ProxyManager:
@@ -23,8 +26,23 @@ class ProxyManager:
             logger.info('Base on the fact that proxies are free, it may take time to test and use the valid one')
             logger.info('Start finding valid proxies...')
             self.__test_proxy = self.__test_proxy_driver if test_type == 'driver' else self.__test_proxy_request
+
+        self.__ensure_valid_proxies_directory_exists()
+
         self.proxies = self.__fetch_valid_proxies(test_type, proxy_file)
         self.lock = Lock()
+
+    def __ensure_valid_proxies_directory_exists(self) -> None:
+        """
+        Ensures that the directory for storing valid proxies exists.
+        Creates the directory if it does not exist.
+        """
+        if not path.exists(VALID_PROXIES_PATH):
+            try:
+                makedirs(VALID_PROXIES_PATH)
+                logger.info(f"Created directory for valid proxies at {VALID_PROXIES_PATH}")
+            except Exception as e:
+                logger.error(f"Failed to create directory for valid proxies: {e}")
 
     def __fetch_valid_proxies(self, do_test: str, proxy_file: str) -> list:
         """
@@ -89,7 +107,31 @@ class ProxyManager:
                     logger.debug(f"Error testing proxy {proxy}")
 
         shuffle(valid_proxies)
+        self.__log_valid_proxies(valid_proxies)
         return valid_proxies
+
+    def __log_valid_proxies(self, proxies: list) -> None:
+        """
+        Logs valid proxies to a file named 'valid_proxies_DATE_HOUR_MINUTE.txt'.
+
+        Args:
+            proxies (list): The list of valid proxies to log.
+        """
+        if not proxies:
+            return
+
+        # Create the file path using APP_PATH and current date and time
+        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        filename = f"valid_proxies_{current_time}.txt"
+        file_path = path.join(VALID_PROXIES_PATH, filename)
+
+        # Write the valid proxies to the file
+        with self.lock:
+            with open(file_path, 'a') as f:
+                for proxy in proxies:
+                    f.write(proxy + '\n')
+
+        logger.debug(f"Logged {len(proxies)} valid proxies to {file_path}")
 
     def __is_valid_proxy_format(self, proxy: str) -> bool:
         """

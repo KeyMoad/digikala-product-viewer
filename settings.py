@@ -1,6 +1,9 @@
 from os import path
 
 
+# App Path
+APP_PATH = path.dirname(path.realpath(__file__))
+
 # Define the product URL
 BASE_PRODUCT_URL = 'https://www.digikala.com/product'
 DEFAULT_TIMEOUT = 10
@@ -21,4 +24,7 @@ SOCKS5_PROXY_LIST_URLS = [
 ]
 
 # ID List file path
-ID_LIST_FILE = path.join(path.dirname(path.realpath(__file__)), 'id_list.txt')
+ID_LIST_FILE = path.join(APP_PATH, 'id_list.txt')
+
+# Valid Proxies Path
+VALID_PROXIES_PATH = path.join(APP_PATH, 'valid_proxies')

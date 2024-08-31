@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
 from sys import exit
+from time import sleep
 from random import uniform
 import chromedriver_autoinstaller
 
