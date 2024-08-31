@@ -19,6 +19,8 @@ class ProxyManager:
         Args:
             proxy_urls (list): A list of URLs to fetch proxies from.
         """
+        self.lock = Lock()
+
         self.proxy_urls = proxy_urls
         self.proxy_type = proxy_type
         self.test_url = test_url
@@ -30,7 +32,6 @@ class ProxyManager:
         self.__ensure_valid_proxies_directory_exists()
 
         self.proxies = self.__fetch_valid_proxies(test_type, proxy_file)
-        self.lock = Lock()
 
     def __ensure_valid_proxies_directory_exists(self) -> None:
         """
