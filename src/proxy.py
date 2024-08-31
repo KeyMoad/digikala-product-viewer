@@ -123,7 +123,7 @@ class ProxyManager:
 
         # Create the file path using APP_PATH and current date and time
         current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        filename = f"valid_proxies_{current_time}.txt"
+        filename = f"{self.proxy_type}_valid_proxies_{current_time}.txt"
         file_path = path.join(VALID_PROXIES_PATH, filename)
 
         # Write the valid proxies to the file
