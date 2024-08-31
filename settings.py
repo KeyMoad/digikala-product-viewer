@@ -8,8 +8,8 @@ DEFAULT_TIMEOUT = 10
 # Proxy list
 HTTP_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt',
-    'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/generated/http_proxies.txt'
-    
+    'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/generated/http_proxies.txt',
+    'https://raw.githubusercontent.com/MrMarble/proxy-list/main/all.txt'
 ]
 SOCKS4_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks4.txt',
