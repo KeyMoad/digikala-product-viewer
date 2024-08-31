@@ -71,7 +71,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
 
-def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, proxy_test_type: str, proxy_file: str):
+def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, proxy_test_type: str, proxy_file: str, premium_proxy: bool, username: str = None, password: str = None):
     """
     Main function to initiate viewing process for each product in batches.
 
@@ -79,15 +79,27 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
         view_number (int): Number of views to simulate.
         product_ids (list): List of product IDs.
         batch_size (int): Number of concurrent views to run in each batch.
+        proxy_type (str): Type of proxy to use (http, socks4, socks5).
+        proxy_test_type (str): Type of proxy validation test (driver, request).
+        proxy_file (str): Path to a custom proxy file.
+        premium_proxy (bool): If true, use premium proxy with authentication.
+        username (str): Username for premium proxy authentication.
+        password (str): Password for premium proxy authentication.
     """
-    if proxy_type == 'http':
-        proxy_manager = ProxyManager(HTTP_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL, proxy_test_type, proxy_file)
-    elif proxy_type == 'socks4':
-        proxy_manager = ProxyManager(SOCKS4_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL, proxy_test_type, proxy_file)
-    elif proxy_type == 'socks5':
-        proxy_manager = ProxyManager(SOCKS5_PROXY_LIST_URLS, proxy_type, BASE_PRODUCT_URL, proxy_test_type, proxy_file)
-    else:
-        raise ValueError(f"Unsupported proxy type: {proxy_type}")
+    proxy_manager = ProxyManager(
+        proxy_urls={
+            'http': HTTP_PROXY_LIST_URLS,
+            'socks4': SOCKS4_PROXY_LIST_URLS,
+            'socks5': SOCKS5_PROXY_LIST_URLS
+        }.get(proxy_type),
+        proxy_type=proxy_type,
+        test_url=BASE_PRODUCT_URL,
+        test_type=proxy_test_type,
+        proxy_file=proxy_file,
+        premium=premium_proxy,
+        username=username,
+        password=password
+    )
 
     for product_id in product_ids:
         view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
@@ -103,10 +115,21 @@ if __name__ == '__main__':
     parser.add_argument('--proxy-type', type=str, default='http', choices=['http', 'socks4', 'socks5'], help='The proxy type of connections. Default [http]')
     parser.add_argument('--proxy-test-type', type=str, default='', choices=['driver', 'request'], help='The type of proxy validation test. The driver mode takes more time but provides more accurate results, while the request mode is faster but offers less thorough validation. [If not passed, no test will be done]')
     parser.add_argument('--proxy-file', type=str, default='', help='If you want to use your own proxy list, pass the file path. File format should be txt and put your proxies addresses with this syntax: IP:PORT. [proxy-type is necessary]')
+    parser.add_argument('--premium-proxy', action='store_true', help='If passed, indicates that the proxy list contains premium proxies.')
+    parser.add_argument('--username', type=str, default=None, help='Username for premium proxy authentication.')
+    parser.add_argument('--password', type=str, default=None, help='Password for premium proxy authentication.')
+
     args = parser.parse_args()
 
     # Automatically install the correct version of chromedriver
     chromedriver_autoinstaller.install()
+
+    if args.premium_proxy and (not args.proxy_file):
+        logger.error('Please provide premium proxy list as a file.')
+        exit(1)
+    if args.premium_proxy and (not args.username or not args.password):
+        logger.error('Premium proxy requires both a username and a password.')
+        exit(1)
 
     # Read product IDs from file
     product_ids = read_file(ID_LIST_FILE)
@@ -115,6 +138,6 @@ if __name__ == '__main__':
         exit(1)
 
     try:
-        main(args.view_number, product_ids, args.batch_size, args.proxy_type, args.proxy_test_type, args.proxy_file)
+        main(args.view_number, product_ids, args.batch_size, args.proxy_type, args.proxy_test_type, args.proxy_file, args.premium_proxy, args.username, args.password)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
