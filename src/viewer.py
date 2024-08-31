@@ -59,7 +59,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(review_tab_selector):
                     logger.info("Clicked on review tab")
-                sleep(uniform(2, 8))
+                sleep(uniform(4, 12))
 
                 specs_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
@@ -69,7 +69,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(specs_tab_selector):
                     logger.info("Clicked on specs tab")
-                sleep(uniform(2, 6))
+                sleep(uniform(2, 7.5))
 
                 comments_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
@@ -79,7 +79,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(comments_tab_selector):
                     logger.info("Clicked on comments tab")
-                sleep(uniform(2, 7))
+                sleep(uniform(2.5, 7))
 
                 see_all_comments_selector = (
                     "span.inline-flex.items-center.cursor-pointer."
@@ -87,7 +87,7 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(see_all_comments_selector):
                     logger.info("Clicked on see all comments")
-                sleep(uniform(4, 7))
+                sleep(uniform(4, 10))
 
             except Exception as e:
                 logger.error(f"Could not complete the interaction: {e}")
