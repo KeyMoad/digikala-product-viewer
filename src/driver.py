@@ -26,6 +26,7 @@ class DriverManager:
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--incognito")
         chrome_options.add_argument(f"user-agent={user_agent}")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
 
         # Add the proxy to Chrome options
         if proxy:
