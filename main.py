@@ -63,9 +63,10 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
                 except Exception as e:
                     logger.error(f"An error occurred while processing a view: {e}")
 
-        time_to_wait = uniform(45, 65)
-        logger.info(f'batch {batch + 1} completed. Waiting {time_to_wait}.')
-        sleep(time_to_wait)
+        if not (batch + 1) == num_batches:
+            time_to_wait = uniform(45, 65)
+            logger.info(f'batch {batch + 1} completed. Waiting {time_to_wait}.')
+            sleep(time_to_wait)
 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
