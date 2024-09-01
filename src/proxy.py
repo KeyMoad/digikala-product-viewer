@@ -60,8 +60,9 @@ class ProxyManager:
         """
         proxies = read_file(proxy_file) if proxy_file else self.__online_fetch()
         proxies_list = self.__get_valid_proxies(list(proxies)) if do_test else list(proxies)
+        shuffle(proxies_list)
 
-        return shuffle(proxies_list)
+        return proxies_list
 
     def __online_fetch(self):
         proxies = set()
