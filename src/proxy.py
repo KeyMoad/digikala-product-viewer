@@ -23,10 +23,13 @@ class ProxyManager:
 
         self.proxy_urls = proxy_urls
         self.proxy_type = proxy_type
+        self.proxy_file = proxy_file
         self.is_proxy_premium = premium
         self.username = username
         self.password = password
         self.test_url = test_url
+        self.test_type = test_type
+
         if test_type:
             logger.info('Base on the fact that proxies are free, it may take time to test and use the valid one')
             logger.info('Start finding valid proxies...')
@@ -58,7 +61,7 @@ class ProxyManager:
         proxies = read_file(proxy_file) if proxy_file else self.__online_fetch()
         proxies_list = self.__get_valid_proxies(list(proxies)) if do_test else list(proxies)
 
-        return proxies_list
+        return shuffle(proxies_list)
 
     def __online_fetch(self):
         proxies = set()
@@ -240,4 +243,4 @@ class ProxyManager:
         """
         Refresh the list of proxies by fetching them again.
         """
-        self.proxies = self.__fetch_valid_proxies()
+        self.proxies = self.__fetch_valid_proxies(self.test_type, self.proxy_file)

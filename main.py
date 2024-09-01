@@ -103,6 +103,7 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
 
     for product_id in product_ids:
         view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
+        proxy_manager.refresh_proxies()
 
 
 if __name__ == '__main__':
