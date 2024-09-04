@@ -28,7 +28,7 @@ class ProductViewer:
                 self.driver.execute_script("arguments[0].click();", element)
                 return True
             except Exception:
-                self.driver.execute_script("window.scrollBy(0, 500);")
+                self.driver.execute_script("window.scrollBy(0, 600);")
                 sleep(1)
         return False
 
@@ -47,7 +47,7 @@ class ProductViewer:
             is_complete = 0
 
             for _ in range(randint(4, 7)):
-                scroll_amount = randint(300, 1150)
+                scroll_amount = randint(300, 1200)
                 self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
                 sleep(uniform(0.5, 3.5))
 
