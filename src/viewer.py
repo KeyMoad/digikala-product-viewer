@@ -10,7 +10,7 @@ class ProductViewer:
         self.driver = driver
         self.wait = wait
 
-    def __scroll_and_click(self, selector, max_scrolls=5) -> bool:
+    def __scroll_and_click(self, selector, max_scrolls=2) -> bool:
         """
         Scrolls the page and clicks on an element identified by the selector.
 
@@ -21,15 +21,14 @@ class ProductViewer:
         Returns:
             bool: True if element is clicked, False otherwise.
         """
-        for scroll in range(max_scrolls):
+        for _ in range(max_scrolls):
             try:
                 element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector)))
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
                 self.driver.execute_script("arguments[0].click();", element)
                 return True
             except Exception:
-                logger.warning(f"Scroll attempt {scroll + 1} failed")
-                self.driver.execute_script("window.scrollBy(0, 400);")
+                self.driver.execute_script("window.scrollBy(0, 500);")
                 sleep(1)
         return False
 
@@ -45,8 +44,10 @@ class ProductViewer:
             self.driver.get(url)
             sleep(uniform(5, 12))
 
+            is_complete = 0
+
             for _ in range(randint(4, 7)):
-                scroll_amount = randint(200, 1100)
+                scroll_amount = randint(300, 1150)
                 self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
                 sleep(uniform(0.5, 3.5))
 
@@ -59,6 +60,9 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(review_tab_selector):
                     logger.info("Clicked on review tab")
+                    is_complete += 1
+                else:
+                    logger.warning("Click on review tab failed")
                 sleep(uniform(4, 12))
 
                 specs_tab_selector = (
@@ -69,6 +73,9 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(specs_tab_selector):
                     logger.info("Clicked on specs tab")
+                    is_complete += 1
+                else:
+                    logger.warning("Click on specs tab failed")
                 sleep(uniform(2, 7.5))
 
                 comments_tab_selector = (
@@ -79,6 +86,9 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(comments_tab_selector):
                     logger.info("Clicked on comments tab")
+                    is_complete += 1
+                else:
+                    logger.info("Click on comments tab failed")
                 sleep(uniform(2.5, 7))
 
                 see_all_comments_selector = (
@@ -87,6 +97,9 @@ class ProductViewer:
                 )
                 if self.__scroll_and_click(see_all_comments_selector):
                     logger.info("Clicked on see all comments")
+                    is_complete += 1
+                else:
+                    logger.info("Click on see all comments failed")
                 sleep(uniform(4, 10))
 
             except Exception as e:
@@ -96,4 +109,7 @@ class ProductViewer:
             self.driver.execute_script("window.scrollTo(0, 0);")
             sleep(uniform(1, 4))  # Random delay after scrolling back
 
-            logger.info(f"View completed")
+            if is_complete == 0:
+                logger.warning(f"View failed!!")
+            else:
+                logger.info(f"View completed")
