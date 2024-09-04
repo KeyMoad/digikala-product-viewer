@@ -28,7 +28,7 @@ class ProductViewer:
                 self.driver.execute_script("arguments[0].click();", element)
                 return True
             except Exception:
-                self.driver.execute_script("window.scrollBy(0, 600);")
+                self.driver.execute_script("window.scrollBy(0, 650);")
                 sleep(1)
         return False
 
@@ -88,7 +88,7 @@ class ProductViewer:
                     logger.info("Clicked on comments tab")
                     is_complete += 1
                 else:
-                    logger.info("Click on comments tab failed")
+                    logger.warning("Click on comments tab failed")
                 sleep(uniform(2.5, 7))
 
                 see_all_comments_selector = (
@@ -99,7 +99,7 @@ class ProductViewer:
                     logger.info("Clicked on see all comments")
                     is_complete += 1
                 else:
-                    logger.info("Click on see all comments failed")
+                    logger.warning("Click on see all comments failed")
                 sleep(uniform(4, 10))
 
             except Exception as e:
