@@ -2,6 +2,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from random import randint, uniform
 from time import sleep
+
 from src.utils import logger
 
 

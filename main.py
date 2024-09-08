@@ -1,9 +1,9 @@
+from signal import signal, SIGINT, SIGTERM
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.support.ui import WebDriverWait
 from sys import exit
 from time import sleep
 from random import uniform
-import chromedriver_autoinstaller
 
 from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS, DEFAULT_CONFIG_PATH
 from src.config import load_config, merge_args_with_config
@@ -11,6 +11,16 @@ from src.utils import logger, read_file
 from src.viewer import ProductViewer
 from src.driver import DriverManager
 from src.proxy import ProxyManager
+
+
+# Flag to indicate whether the script should keep running
+keep_running = True
+
+def handle_shutdown_signal(signum):
+    """Handles shutdown signals to gracefully exit the script."""
+    global keep_running
+    logger.info(f"Received signal {signum}, shutting down gracefully...")
+    keep_running = False
 
 
 def view_single_instance(product_id: str, proxy_manager: ProxyManager):
@@ -66,7 +76,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
 
         if not (batch + 1) == num_batches:
             time_to_wait = uniform(45, 65)
-            logger.info(f'{product_id.strip()} - batch {batch + 1} completed. Waiting {time_to_wait}.')
+            logger.info(f'{product_id.strip()} - Batch {batch + 1} completed. Waiting {time_to_wait} seconds...')
             sleep(time_to_wait)
 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
@@ -102,13 +112,18 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
         password=password
     )
 
-    for product_id in product_ids:
-        view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
-        proxy_manager.refresh_proxies()
+    while keep_running:
+        for product_id in product_ids:
+            view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
+            proxy_manager.refresh_proxies()
+
+        logger.info("All products viewed. Sleeping for 10 seconds...")
+        sleep(10)
 
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
+    import chromedriver_autoinstaller
 
     # Argument parser for command line arguments
     parser = ArgumentParser(description='Simulate product views.')
@@ -124,7 +139,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # Load config file if provided
+    # Load config file
     config = load_config(args.config)
     # Merge arguments with config values
     merged_args = merge_args_with_config(args, config)
@@ -139,6 +154,9 @@ if __name__ == '__main__':
     if merged_args['premium_proxy'] and (not merged_args['username'] or not merged_args['password']):
         logger.error('Premium proxy requires both a username and a password.')
         exit(1)
+
+    signal(SIGINT, handle_shutdown_signal)   # Handle Ctrl+C
+    signal(SIGTERM, handle_shutdown_signal)  # Handle service termination
 
     # Read product IDs from file
     product_ids = read_file(ID_LIST_FILE)
