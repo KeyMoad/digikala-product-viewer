@@ -23,6 +23,9 @@ SOCKS5_PROXY_LIST_URLS = [
     'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/generated/socks5_proxies.txt'
 ]
 
+# Default config file path
+DEFAULT_CONFIG_PATH = path.join(APP_PATH, 'config.yaml')
+
 # ID List file path
 ID_LIST_FILE = path.join(APP_PATH, 'id_list.txt')
 

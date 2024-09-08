@@ -5,7 +5,7 @@ from time import sleep
 from random import uniform
 import chromedriver_autoinstaller
 
-from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS
+from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS, DEFAULT_CONFIG_PATH
 from src.config import load_config, merge_args_with_config
 from src.utils import logger, read_file
 from src.viewer import ProductViewer
@@ -50,7 +50,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
     for batch in range(num_batches):
         remaining_views = view_number - batch * batch_size
         current_batch_size = min(batch_size, remaining_views)
-        logger.info(f'Running batch {batch + 1}/{num_batches} with {current_batch_size} views...')
+        logger.info(f'{product_id.strip()} - Running batch {batch + 1}/{num_batches} with {current_batch_size} views...')
 
         with ThreadPoolExecutor(max_workers=current_batch_size) as executor:
             futures = [
@@ -62,11 +62,11 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
                 try:
                     future.result()  # This will raise an exception if the callable raised one
                 except Exception as e:
-                    logger.error(f"An error occurred while processing a view: {e}")
+                    logger.error(f"{product_id.strip()} - An error occurred while processing a view: {e}")
 
         if not (batch + 1) == num_batches:
             time_to_wait = uniform(45, 65)
-            logger.info(f'batch {batch + 1} completed. Waiting {time_to_wait}.')
+            logger.info(f'{product_id.strip()} - batch {batch + 1} completed. Waiting {time_to_wait}.')
             sleep(time_to_wait)
 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # Argument parser for command line arguments
     parser = ArgumentParser(description='Simulate product views.')
-    parser.add_argument('--config', type=str, help='Path to the config file.')
+    parser.add_argument('--config', type=str, default=DEFAULT_CONFIG_PATH, help='Path to the config file.')
     parser.add_argument('--view-number', type=int, help='Number of views to simulate per product. Default [50]')
     parser.add_argument('--batch-size', type=int, help='Number of concurrent views to run in each batch. Default [10]')
     parser.add_argument('--proxy-type', type=str, choices=['http', 'socks4', 'socks5'], help='The proxy type of connections. Default [http]')
