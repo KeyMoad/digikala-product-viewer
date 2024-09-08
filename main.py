@@ -19,7 +19,7 @@ keep_running = True
 def handle_shutdown_signal(signum):
     """Handles shutdown signals to gracefully exit the script."""
     global keep_running
-    logger.info(f"Received signal {signum}, shutting down gracefully...")
+    logger.info(f"Received signal {signum}, shutting down gracefully. Be patient...")
     keep_running = False
 
 
