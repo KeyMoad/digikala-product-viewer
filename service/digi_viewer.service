@@ -1,0 +1,15 @@
+[Unit]
+Description={{ SERVICE_TITLE }}
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ PYTHON_PATH }} {{ SCRIPT_PATH }}
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
