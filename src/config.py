@@ -18,7 +18,7 @@ def merge_args_with_config(args, config) -> dict:
         'proxy_type': get_value(args.proxy_type, config.get('proxy_type'), 'http'),
         'proxy_test_type': get_value(args.proxy_test_type, config.get('proxy_test_type'), ''),
         'proxy_file': get_value(args.proxy_file, config.get('proxy_file'), ''),
-        'premium_proxy': args.premium_proxy if args.premium_proxy is not None else config.get('premium_proxy', False),
+        'premium_proxy': args.premium_proxy if args.premium_proxy else config.get('premium_proxy', False),
         'username': get_value(args.username, config.get('username'), None),
         'password': get_value(args.password, config.get('password'), None)
     }
