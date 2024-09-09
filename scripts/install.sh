@@ -5,11 +5,8 @@
 # Variables
 ARGLEN=$#
 REPOSITORY_NAME="digikala-product-viewer"
-REPOSITORY_URL="git@github.com:KeyMoad/digikala-product-viewer.git"
 SERVICE_NAME=$REPOSITORY_NAME
-SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME.service"
-IP=$(hostname -i)
-HOSTNAME=$(hostname -A)
+SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME.service"W
 P_PATH="/opt/$REPOSITORY_NAME"
 RESOLVER_CONF_FILE=/etc/resolv.conf
 COUNTRY_CODE=$(curl -SskL ifconfig.io/country_code)
