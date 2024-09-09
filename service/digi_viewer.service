@@ -1,12 +1,16 @@
 [Unit]
-Description={{ SERVICE_TITLE }}
+Description=servicename
 After=network.target
 
 [Service]
 Type=simple
-ExecStart={{ PYTHON_PATH }} {{ SCRIPT_PATH }}
+ExecStart=/usr/bin/env bash yourapppath/service/start.sh
+ExecStop=/usr/bin/env bash yourapppath/service/stop.sh
 Restart=always
 RestartSec=10
+TimeoutStartSec=900
+TimeoutStopSec=900
+SyslogIdentifier=servicename
 StandardOutput=journal
 StandardError=journal
 Environment="PYTHONUNBUFFERED=1"
