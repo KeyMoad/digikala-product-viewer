@@ -1,0 +1,23 @@
+# Number of views to simulate per product. If commented out, 50 view will be done.
+view_number: 100
+
+# Number of concurrent views to run in each batch. If commented out, 5 batch size will set in multi view settings.
+batch_size: 10 
+
+# The proxy type of connections (http, socks4, socks5). If commented out, http type will be used.
+proxy_type: http
+
+# The type of proxy validation test (driver/request). If commented out, no test will be done.
+# proxy_test_type: driver
+
+# Path to a custom proxy file. If commented out, no proxy file will be used.
+# proxy_file: /path/to/proxy/list.txt
+
+# If true, indicates that the proxy list contains premium proxies. If commented out, defaults to False.
+# premium_proxy: true
+
+# Username for premium proxy authentication. If commented out, no authentication will be used.
+# username: my_username
+
+# Password for premium proxy authentication. If commented out, no authentication will be used.
+# password: my_password

@@ -1,0 +1,19 @@
+[Unit]
+Description=servicename
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash yourapppath/service/start.sh
+ExecStop=/usr/bin/env bash yourapppath/service/stop.sh
+Restart=always
+RestartSec=10
+TimeoutStartSec=900
+TimeoutStopSec=900
+SyslogIdentifier=servicename
+StandardOutput=journal
+StandardError=journal
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
