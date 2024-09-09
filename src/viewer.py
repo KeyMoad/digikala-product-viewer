@@ -92,17 +92,6 @@ class ProductViewer:
                     logger.warning("Click on comments tab failed")
                 sleep(uniform(2.5, 7))
 
-                see_all_comments_selector = (
-                    "span.inline-flex.items-center.cursor-pointer."
-                    "styles_Anchor--secondary__3KsgY.text-button-2.my-auto"
-                )
-                if self.__scroll_and_click(see_all_comments_selector):
-                    logger.info("Clicked on see all comments")
-                    is_complete += 1
-                else:
-                    logger.warning("Click on see all comments failed")
-                sleep(uniform(4, 10))
-
             except Exception as e:
                 logger.error(f"Could not complete the interaction: {e}")
 
