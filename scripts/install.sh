@@ -6,7 +6,7 @@
 ARGLEN=$#
 REPOSITORY_NAME="digikala-product-viewer"
 SERVICE_NAME=$REPOSITORY_NAME
-SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME.service"W
+SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME.service"
 P_PATH="/opt/$REPOSITORY_NAME"
 RESOLVER_CONF_FILE=/etc/resolv.conf
 COUNTRY_CODE=$(curl -SskL ifconfig.io/country_code)
