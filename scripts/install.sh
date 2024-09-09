@@ -45,7 +45,7 @@ function install() {
     # Insatll requirements on venv
     . $P_PATH/.venv/bin/activate > /dev/null
     $P_PATH/.venv/bin/python3 -m $PIP -U pip > /dev/null
-    $P_PATH/.venv/bin/python3 -m $PIP -r $P_PATH/installer/requirements.txt > /dev/null
+    $P_PATH/.venv/bin/python3 -m $PIP -r $P_PATH/requirements.txt > /dev/null
 
     # Install service
     mv $P_PATH/service/$SERVICE_NAME.service $SERVICE_PATH >/dev/null 2>&1
