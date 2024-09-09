@@ -76,7 +76,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
                     logger.error(f"{product_id.strip()} - An error occurred while processing a view: {e}")
 
         if not (batch + 1) == num_batches:
-            time_to_wait = uniform(45, 65)
+            time_to_wait = uniform(15, 30)
             logger.info(f'{product_id.strip()} - Batch {batch + 1} completed. Waiting {time_to_wait} seconds...')
             sleep(time_to_wait)
 
