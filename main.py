@@ -5,12 +5,13 @@ from sys import exit
 from time import sleep
 from random import uniform
 
-from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS, DEFAULT_CONFIG_PATH
+from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS, DEFAULT_CONFIG_PATH, DATABASE_PATH
 from src.config import load_config, merge_args_with_config
 from src.utils import logger, read_file
 from src.viewer import ProductViewer
 from src.driver import DriverManager
 from src.proxy import ProxyManager
+from src.result import fetch_product_views, init_db
 
 
 # Flag to indicate whether the script should keep running
@@ -36,8 +37,8 @@ def view_single_instance(product_id: str, proxy_manager: ProxyManager):
     driver = driver_manager.get_driver()
     wait = WebDriverWait(driver, DEFAULT_TIMEOUT)
 
-    viewer = ProductViewer(driver, wait)
-    viewer.simulate_views(url, 1)
+    viewer = ProductViewer(driver, wait, DATABASE_PATH)
+    viewer.simulate_views(url, 1, product_id)
 
     driver.quit()
 
@@ -125,8 +126,12 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     import chromedriver_autoinstaller
 
+    # Initialize database
+    init_db(db_path=DATABASE_PATH)
+
     # Argument parser for command line arguments
     parser = ArgumentParser(description='Simulate product views.')
+    parser.add_argument('--result', type=str, nargs='?', const='all', help='Display the completed views.')
     parser.add_argument('--config', type=str, default=DEFAULT_CONFIG_PATH, help='Path to the config file.')
     parser.add_argument('--view-number', type=int, help='Number of views to simulate per product. Default [50]')
     parser.add_argument('--batch-size', type=int, help='Number of concurrent views to run in each batch. Default [10]')
@@ -138,6 +143,20 @@ if __name__ == '__main__':
     parser.add_argument('--password', type=str, help='Password for premium proxy authentication.')
 
     args = parser.parse_args()
+
+    # If --result is passed, display the product views
+    if args.result:
+        if args.result == 'all':
+            all_views = fetch_product_views(DATABASE_PATH)
+            for record in all_views:
+                print(f"Product: {record[0]} | Completed Views: {record[1]}")
+        else:
+            product_view = fetch_product_views(DATABASE_PATH, product_id=args.result)
+            if product_view:
+                print(f"Product: {product_view[0]} | Completed Views: {product_view[1]}")
+            else:
+                print(f"No records found for product {args.result}.")
+        exit(0)
 
     # Load config file
     config = load_config(args.config)

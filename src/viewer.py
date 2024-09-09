@@ -4,12 +4,14 @@ from random import randint, uniform
 from time import sleep
 
 from src.utils import logger
+from src.result import update_completed_views
 
 
 class ProductViewer:
-    def __init__(self, driver, wait):
+    def __init__(self, driver, wait, db_path):
         self.driver = driver
         self.wait = wait
+        self.db_path = db_path
 
     def __scroll_and_click(self, selector, max_scrolls=2) -> bool:
         """
@@ -33,7 +35,7 @@ class ProductViewer:
                 sleep(1)
         return False
 
-    def simulate_views(self, url: str, view_number: int):
+    def simulate_views(self, url: str, view_number: int, product_id: str):
         """
         Simulates multiple views on a product page.
 
@@ -100,6 +102,7 @@ class ProductViewer:
             sleep(uniform(1, 4))  # Random delay after scrolling back
 
             if is_complete == 0:
-                logger.warning(f"View failed!!")
+                logger.warning(f"View failed for product {product_id}")
             else:
-                logger.info(f"View completed")
+                update_completed_views(self.db_path, product_id)
+                logger.info(f"View completed successfully for product {product_id}")
