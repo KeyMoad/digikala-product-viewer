@@ -42,12 +42,6 @@ function install() {
     apt upgrade -y
     apt install -y python3.11-full python3-pip git vim tmux wget apt-transport-https software-properties-common google-chrome-stable
 
-    # Clone git repositorys
-    git clone $REPOSITORY_URL $P_PATH/ >/dev/null
-
-    # Create log directorie
-    mkdir -p /var/log/$SERVICE_NAME >/dev/null
-
     sed -i 's|yourapppath|'$P_PATH'|g' $P_PATH/service/start.sh $P_PATH/service/$SERVICE_NAME.service
     sed -i 's|servicename|'$SERVICE_NAME'|g' $P_PATH/service/stop.sh $P_PATH/service/$SERVICE_NAME.service
 
