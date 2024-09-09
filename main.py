@@ -148,8 +148,11 @@ if __name__ == '__main__':
     if args.result:
         if args.result == 'all':
             all_views = fetch_product_views(DATABASE_PATH)
-            for record in all_views:
-                print(f"Product: {record[0]} | Completed Views: {record[1]}")
+            if all_views:
+                for record in all_views:
+                    print(f"Product: {record[0]} | Completed Views: {record[1]}")
+            else:
+                print(f"No records found.")
         else:
             product_view = fetch_product_views(DATABASE_PATH, product_id=args.result)
             if product_view:
