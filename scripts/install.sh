@@ -29,10 +29,6 @@ function uninstall() {
 }
 
 function install() {
-    if [ -x $P_PATH ]; then
-        uninstall;
-    fi
-
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
     echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
     apt update -y
