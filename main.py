@@ -83,21 +83,7 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
 
-def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, proxy_test_type: str, proxy_file: str, premium_proxy: bool, username: str = None, password: str = None):
-    """
-    Main function to initiate viewing process for each product in batches.
-
-    Args:
-        view_number (int): Number of views to simulate.
-        product_ids (list): List of product IDs.
-        batch_size (int): Number of concurrent views to run in each batch.
-        proxy_type (str): Type of proxy to use (http, socks4, socks5).
-        proxy_test_type (str): Type of proxy validation test (driver, request).
-        proxy_file (str): Path to a custom proxy file.
-        premium_proxy (bool): If true, use premium proxy with authentication.
-        username (str): Username for premium proxy authentication.
-        password (str): Password for premium proxy authentication.
-    """
+def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, proxy_test_type: str, proxy_file: str, premium_proxy: bool, view_chunk: int, username: str = None, password: str = None):
     proxy_manager = ProxyManager(
         proxy_urls={
             'http': HTTP_PROXY_LIST_URLS,
@@ -113,13 +99,55 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
         password=password
     )
 
-    while keep_running:
-        for product_id in product_ids:
-            view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
-            proxy_manager.refresh_proxies()
+    if view_chunk == 0:
+        # No chunking, process each product fully before moving to the next
+        logger.info("No chunking specified. Processing all views for each product sequentially.")
+        
+        while keep_running:
+            for product_id in product_ids:
+                if not keep_running:
+                    logger.info("Shutdown signal received. Exiting...")
+                    break
 
-        logger.info("All products viewed. Sleeping for 10 seconds...")
-        sleep(10)
+                logger.info(f"Processing all {view_number} views for product {product_id.strip()}...")
+                try:
+                    view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
+                except Exception:
+                    logger.error(f"Error during viewing process for product {product_id.strip()}.")
+                
+                proxy_manager.refresh_proxies()
+
+            logger.info("All products viewed. Sleeping for 10 seconds...")
+            sleep(10)
+
+    else:
+        # Chunking logic as before
+        total_cycles = (view_number + view_chunk - 1) // view_chunk if view_chunk > 0 else 1
+
+        while keep_running:
+            current_cycle = 0
+            while current_cycle < total_cycles and keep_running:
+                logger.info(f"Starting cycle {current_cycle + 1}/{total_cycles}...")
+
+                for product_id in product_ids:
+                    if not keep_running:
+                        logger.info("Shutdown signal received. Exiting...")
+                        break
+
+                    views_in_current_cycle = min(view_chunk, view_number - current_cycle * view_chunk)
+                    logger.info(f"Processing {views_in_current_cycle} views for product {product_id.strip()}...")
+                    
+                    try:
+                        view_product_in_batches(product_id, views_in_current_cycle, batch_size, proxy_manager)
+                    except Exception:
+                        logger.error(f"Error during viewing process for product {product_id.strip()}.")
+                    
+                    proxy_manager.refresh_proxies()
+
+                current_cycle += 1
+
+            logger.info("All products viewed for this cycle. Sleeping for 10 seconds before the next cycle...")
+            sleep(10)
 
 
 if __name__ == '__main__':
@@ -141,6 +169,7 @@ if __name__ == '__main__':
     parser.add_argument('--premium-proxy', action='store_true', help='If passed, indicates that the proxy list contains premium proxies.')
     parser.add_argument('--username', type=str, help='Username for premium proxy authentication.')
     parser.add_argument('--password', type=str, help='Password for premium proxy authentication.')
+    parser.add_argument('--view-chunk', type=int, help='Number of views per chunk for each product. Default is to distribute views evenly across products.')
 
     args = parser.parse_args()
 
@@ -176,6 +205,9 @@ if __name__ == '__main__':
     if merged_args['premium_proxy'] and (not merged_args['username'] or not merged_args['password']):
         logger.error('Premium proxy requires both a username and a password.')
         exit(1)
+    if merged_args['view_chunk'] > merged_args['view_number']:
+        logger.error('View Chunk must be smaller than view number.')
+        exit(1)
 
     signal(SIGINT, handle_shutdown_signal)   # Handle Ctrl+C
     signal(SIGTERM, handle_shutdown_signal)  # Handle service termination
@@ -195,6 +227,7 @@ if __name__ == '__main__':
             merged_args['proxy_test_type'],
             merged_args['proxy_file'],
             merged_args['premium_proxy'],
+            merged_args['view_chunk'],
             merged_args['username'],
             merged_args['password']
         )

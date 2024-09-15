@@ -20,5 +20,6 @@ def merge_args_with_config(args, config) -> dict:
         'proxy_file': get_value(args.proxy_file, config.get('proxy_file'), ''),
         'premium_proxy': args.premium_proxy if args.premium_proxy else config.get('premium_proxy', False),
         'username': get_value(args.username, config.get('username'), None),
-        'password': get_value(args.password, config.get('password'), None)
+        'password': get_value(args.password, config.get('password'), None),
+        'view_chunk': get_value(args.view_chunk, config.get('view_chunk'), 0)
     }

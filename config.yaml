@@ -7,6 +7,9 @@ batch_size: 10
 # The proxy type of connections (http, socks4, socks5). If commented out, http type will be used.
 proxy_type: http
 
+# View chunk number to handle equal view for all products. If commented out, 0 will be use
+# view_chunk: 0
+
 # The type of proxy validation test (driver/request). If commented out, no test will be done.
 # proxy_test_type: driver
 
