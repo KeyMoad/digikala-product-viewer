@@ -7,14 +7,19 @@ def init_db(db_path: str):
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+
+        # Drop the product_views table if it exists
+        cursor.execute('DROP TABLE IF EXISTS product_views')
+
+        # Create a new product_views table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS product_views (
+            CREATE TABLE product_views (
                 product_id TEXT PRIMARY KEY,
                 completed_views INTEGER
             )
         ''')
         conn.commit()
-        logger.info("Database initialized and table created if not exists.")
+        logger.info("Database initialized and table created.")
     except Exception as e:
         logger.error(f"Error initializing the database: {e}")
     finally:
