@@ -2,8 +2,7 @@ import sqlite3
 
 from src.utils import logger
 
-# Initialize SQLite database and create table if it doesn't exist
-def init_db(db_path: str):
+def init_db(db_path: str, product_id_list: list):
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -20,8 +19,18 @@ def init_db(db_path: str):
         ''')
         conn.commit()
         logger.info("Database initialized and table created.")
+
+        # Insert product IDs from the list into the table with completed_views initialized to 0
+        for product_id in product_id_list:
+            cursor.execute('INSERT INTO product_views (product_id, completed_views) VALUES (?, ?)', (product_id, 0))
+            logger.debug(f"Inserted product {product_id} with 0 completed views.")
+
+        # Commit the changes to the database
+        conn.commit()
+        logger.info("All product IDs inserted successfully.")
+
     except Exception as e:
-        logger.error(f"Error initializing the database: {e}")
+        logger.error(f"Error initializing the database and inserting products: {e}")
     finally:
         conn.close()
 

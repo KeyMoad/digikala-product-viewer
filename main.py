@@ -154,9 +154,6 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     import chromedriver_autoinstaller
 
-    # Initialize database
-    init_db(db_path=DATABASE_PATH)
-
     # Argument parser for command line arguments
     parser = ArgumentParser(description='Simulate product views.')
     parser.add_argument('--result', type=str, nargs='?', const='all', help='Display the completed views.')
@@ -190,6 +187,15 @@ if __name__ == '__main__':
                 print(f"No records found for product {args.result}.")
         exit(0)
 
+    # Read product IDs from file
+    product_ids = read_file(ID_LIST_FILE)
+    if not product_ids:
+        logger.error(f'Please add your Product IDs in {ID_LIST_FILE} file.')
+        exit(1)
+
+    # Initialize database
+    init_db(db_path=DATABASE_PATH, product_id_list=product_ids)
+
     # Load config file
     config = load_config(args.config)
     # Merge arguments with config values
@@ -211,12 +217,6 @@ if __name__ == '__main__':
 
     signal(SIGINT, handle_shutdown_signal)   # Handle Ctrl+C
     signal(SIGTERM, handle_shutdown_signal)  # Handle service termination
-
-    # Read product IDs from file
-    product_ids = read_file(ID_LIST_FILE)
-    if not product_ids:
-        logger.error(f'Please add your Product IDs in {ID_LIST_FILE} file.')
-        exit(1)
 
     try:
         main(
