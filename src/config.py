@@ -21,5 +21,13 @@ def merge_args_with_config(args, config) -> dict:
         'premium_proxy': args.premium_proxy if args.premium_proxy else config.get('premium_proxy', False),
         'username': get_value(args.username, config.get('username'), None),
         'password': get_value(args.password, config.get('password'), None),
-        'view_chunk': get_value(args.view_chunk, config.get('view_chunk'), 0)
+        'view_chunk': get_value(args.view_chunk, config.get('view_chunk'), 0),
+        'health_ratio': get_value(args.health_ratio, config.get('health_ratio'), 0),
+        'smtp_server': get_value(args.smtp_server, config.get('smtp_server'), 'smtp.example.com'),
+        'smtp_port': get_value(args.smtp_port, config.get('smtp_port'), 587),
+        'sender_email': get_value(args.sender_email, config.get('sender_email'), None),
+        'receiver_email': get_value(args.receiver_email, config.get('receiver_email'), None),
+        'email_username': get_value(args.email_username, config.get('email_username'), None),
+        'email_password': get_value(args.email_password, config.get('email_password'), None),
+
     }

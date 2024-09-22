@@ -7,11 +7,11 @@ from random import uniform
 
 from settings import BASE_PRODUCT_URL, DEFAULT_TIMEOUT, ID_LIST_FILE, HTTP_PROXY_LIST_URLS, SOCKS4_PROXY_LIST_URLS, SOCKS5_PROXY_LIST_URLS, DEFAULT_CONFIG_PATH, DATABASE_PATH
 from src.config import load_config, merge_args_with_config
-from src.utils import logger, read_file
+from src.utils import logger, read_file, EmailAlert
 from src.viewer import ProductViewer
 from src.driver import DriverManager
 from src.proxy import ProxyManager
-from src.result import fetch_product_views, init_db
+from src.result import fetch_product_views, init_db, reset_failed_views
 
 
 # Flag to indicate whether the script should keep running
@@ -43,7 +43,7 @@ def view_single_instance(product_id: str, proxy_manager: ProxyManager):
     driver.quit()
 
 
-def view_product_in_batches(product_id: str, view_number: int, batch_size: int, proxy_manager: ProxyManager):
+def view_product_in_batches(product_id: str, view_number: int, batch_size: int, proxy_manager: ProxyManager, failed_count: int, email: EmailAlert):
     """
     Simulate views on a product in batches concurrently.
     
@@ -75,6 +75,14 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
                 except Exception as e:
                     logger.error(f"{product_id.strip()} - An error occurred while processing a view: {e}")
 
+        failed: int = fetch_product_views(db_path=DATABASE_PATH, product_id=product_id)[-1]
+        if failed_count != 0 and failed > failed_count:
+            logger.warning('Total failed views are more than health ratio.')
+            logger.info('Sending an alert...')
+            message = f"Warning: More than {failed_count} failed views for product {product_id.strip()}.\n"
+            email.send_email(message=message)
+            reset_failed_views(db_path=DATABASE_PATH, product_id=product_id)
+
         if not (batch + 1) == num_batches:
             time_to_wait = uniform(15, 30)
             logger.info(f'{product_id.strip()} - Batch {batch + 1} completed. Waiting {time_to_wait} seconds...')
@@ -83,7 +91,15 @@ def view_product_in_batches(product_id: str, view_number: int, batch_size: int, 
     logger.info(f'Completed viewing process for product {product_id.strip()}')
 
 
-def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, proxy_test_type: str, proxy_file: str, premium_proxy: bool, view_chunk: int, username: str = None, password: str = None):
+def main(
+        view_number: int, product_ids: list,
+        batch_size: int, proxy_type: str,
+        proxy_test_type: str, proxy_file: str,
+        premium_proxy: bool, view_chunk: int,
+        health_ratio: int,
+        email_alert_obj: EmailAlert,
+        username: str = None, password: str = None
+    ):
     proxy_manager = ProxyManager(
         proxy_urls={
             'http': HTTP_PROXY_LIST_URLS,
@@ -111,7 +127,7 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
 
                 logger.info(f"Processing all {view_number} views for product {product_id.strip()}...")
                 try:
-                    view_product_in_batches(product_id, view_number, batch_size, proxy_manager)
+                    view_product_in_batches(product_id, view_number, batch_size, proxy_manager, health_ratio, email_alert_obj)
                 except Exception:
                     logger.error(f"Error during viewing process for product {product_id.strip()}.")
                 
@@ -138,7 +154,7 @@ def main(view_number: int, product_ids: list, batch_size: int, proxy_type: str, 
                     logger.info(f"Processing {views_in_current_cycle} views for product {product_id.strip()}...")
                     
                     try:
-                        view_product_in_batches(product_id, views_in_current_cycle, batch_size, proxy_manager)
+                        view_product_in_batches(product_id, views_in_current_cycle, batch_size, proxy_manager, health_ratio, email_alert_obj)
                     except Exception:
                         logger.error(f"Error during viewing process for product {product_id.strip()}.")
                     
@@ -167,6 +183,13 @@ if __name__ == '__main__':
     parser.add_argument('--username', type=str, help='Username for premium proxy authentication.')
     parser.add_argument('--password', type=str, help='Password for premium proxy authentication.')
     parser.add_argument('--view-chunk', type=int, help='Number of views per chunk for each product. Default is to distribute views evenly across products.')
+    parser.add_argument('--health-ratio', type=int, help='Count of failed views before sending an alert via email.')
+    parser.add_argument('--smtp-server', type=str, help='SMTP server address for sending alert emails.')
+    parser.add_argument('--smtp-port', type=int, help='SMTP server port (default: 587)', default=587)
+    parser.add_argument('--sender-email', type=str, help='Email address to send alerts from.')
+    parser.add_argument('--receiver-email', type=str, help='Email address to receive alerts.')
+    parser.add_argument('--smtp-username', type=str, help='SMTP server username.')
+    parser.add_argument('--smtp-password', type=str, help='SMTP server password.')
 
     args = parser.parse_args()
 
@@ -215,6 +238,15 @@ if __name__ == '__main__':
         logger.error('View Chunk must be smaller than view number.')
         exit(1)
 
+    email_alert_obj = EmailAlert(
+        smtp_server=merged_args['smtp_server'],
+        port=merged_args['smtp_port'],
+        sender_email=merged_args['sender_email'],
+        receiver_email=merged_args['receiver_email'],
+        username=merged_args['email_username'],
+        password=merged_args['email_password']
+    )
+
     signal(SIGINT, handle_shutdown_signal)   # Handle Ctrl+C
     signal(SIGTERM, handle_shutdown_signal)  # Handle service termination
 
@@ -228,6 +260,8 @@ if __name__ == '__main__':
             merged_args['proxy_file'],
             merged_args['premium_proxy'],
             merged_args['view_chunk'],
+            merged_args['health_ratio'],
+            email_alert_obj,
             merged_args['username'],
             merged_args['password']
         )

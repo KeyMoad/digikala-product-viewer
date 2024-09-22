@@ -44,17 +44,17 @@ class ProductViewer:
             view_number (int): Number of views to simulate.
         """
         for _ in range(view_number):
-            self.driver.get(url)
-            sleep(uniform(5, 12))
-
-            is_complete = 0
-
-            for _ in range(randint(4, 7)):
-                scroll_amount = randint(300, 1200)
-                self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
-                sleep(uniform(0.5, 3.5))
-
             try:
+                self.driver.get(url)
+                sleep(uniform(5, 12))
+
+                is_complete = 0
+
+                for _ in range(randint(4, 7)):
+                    scroll_amount = randint(300, 1200)
+                    self.driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
+                    sleep(uniform(0.5, 3.5))
+
                 review_tab_selector = (
                     "li.relative.px-4.py-2.flex.flex-row.items-center.grow.justify-center."
                     "lg\\:grow-0.text-subtitle.text-neutral-500.cursor-pointer."
@@ -95,6 +95,7 @@ class ProductViewer:
                 sleep(uniform(2.5, 7))
 
             except Exception as e:
+                is_complete = 0 if is_complete < 2 else is_complete
                 logger.error(f"Could not complete the interaction: {e}")
 
             # Scroll back up
@@ -102,7 +103,8 @@ class ProductViewer:
             sleep(uniform(1, 4))  # Random delay after scrolling back
 
             if is_complete == 0:
+                update_completed_views(db_path=self.db_path, product_id=product_id, failed=True)
                 logger.warning(f"View failed for product {product_id}")
             else:
-                update_completed_views(self.db_path, product_id)
+                update_completed_views(db_path=self.db_path, product_id=product_id, failed=False)
                 logger.info(f"View completed successfully for product {product_id}")

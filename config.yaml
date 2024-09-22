@@ -10,6 +10,9 @@ proxy_type: http
 # View chunk number to handle equal view for all products. If commented out, 0 will be use
 # view_chunk: 0
 
+# Count of failed views before sending an alert via email. 0 means there is no limit
+# health_ratio: 0
+
 # The type of proxy validation test (driver/request). If commented out, no test will be done.
 # proxy_test_type: driver
 
@@ -24,3 +27,11 @@ proxy_type: http
 
 # Password for premium proxy authentication. If commented out, no authentication will be used.
 # password: my_password
+
+# Email Alert Configuration
+# smtp_server: 
+# smtp_port:
+# sender_email: digi.viewer@yourdomain.com
+# receiver_email:
+# email_username:
+# email_password:
