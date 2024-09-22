@@ -27,7 +27,6 @@ def merge_args_with_config(args, config) -> dict:
         'smtp_port': get_value(args.smtp_port, config.get('smtp_port'), 587),
         'sender_email': get_value(args.sender_email, config.get('sender_email'), None),
         'receiver_email': get_value(args.receiver_email, config.get('receiver_email'), None),
-        'email_username': get_value(args.email_username, config.get('email_username'), None),
-        'email_password': get_value(args.email_password, config.get('email_password'), None),
-
+        'smtp_username': get_value(args.smtp_username, config.get('smtp_username'), None),
+        'smtp_password': get_value(args.smtp_password, config.get('smtp_password'), None)
     }

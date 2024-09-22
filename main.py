@@ -243,8 +243,8 @@ if __name__ == '__main__':
         port=merged_args['smtp_port'],
         sender_email=merged_args['sender_email'],
         receiver_email=merged_args['receiver_email'],
-        username=merged_args['email_username'],
-        password=merged_args['email_password']
+        username=merged_args['smtp_username'],
+        password=merged_args['smtp_password']
     )
 
     signal(SIGINT, handle_shutdown_signal)   # Handle Ctrl+C

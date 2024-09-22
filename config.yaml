@@ -33,5 +33,5 @@ proxy_type: http
 # smtp_port:
 # sender_email: digi.viewer@yourdomain.com
 # receiver_email:
-# email_username:
-# email_password:
+# smtp_username:
+# smtp_password:
